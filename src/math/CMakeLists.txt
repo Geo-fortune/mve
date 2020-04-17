@@ -1,0 +1,14 @@
+
+#cmake acquire the dir name
+
+set (MODEL_NAME math)
+
+# file
+file(GLOB_RECURSE HDR_FILES ${CMAKE_CURRENT_LIST_DIR}/*.h)
+file(GLOB_RECURSE SRC_FILES ${CMAKE_CURRENT_LIST_DIR}/*.cpp ${CMAKE_CURRENT_LIST_DIR}/*.cc)
+
+message(STATUS "libs ${HDR_FILES}")
+
+set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
+set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
+add_library(mve_math STATIC  ${HDR_FILES}) #${SRC_FILES}
