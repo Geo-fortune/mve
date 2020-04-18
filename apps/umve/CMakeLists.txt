@@ -42,6 +42,7 @@ target_link_libraries(umve mve_dmrecon
                            ${OPENGL_LIBRARY}
                            )
 
+                           
 #copy shaders to "bin" dir
 set(SHADER_DIR ${CMAKE_CURRENT_LIST_DIR}/shaders)
 message(STATUS "shader: ${SHADER_DIR}")
