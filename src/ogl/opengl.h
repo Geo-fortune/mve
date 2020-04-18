@@ -30,4 +30,7 @@
 #  include <GL/glext.h>
 #endif
 
+#  include <GL/gl.h>
+#  include <GL/glext.h>
+
 #endif /* OGL_OPEN_GL_HEADER */
