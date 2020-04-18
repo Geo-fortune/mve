@@ -29,3 +29,4 @@ lib
 build
 #
 bin
+!./bin/shaders/

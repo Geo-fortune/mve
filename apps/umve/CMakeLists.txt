@@ -15,9 +15,6 @@ endif()
 find_package(OpenGL REQUIRED)
 include_directories(${OpenGL_INCLUDE_DIR})
 
-message(STATUS "umve opengl : ${OPENGL_INCLUDE_DIR}")
-message(STATUS "umve opengl : ${OPENGL_LIBRARY}")
-message(STATUS "umve headers : ${HDR_FILES}")
 
 find_package(Qt5 COMPONENTS Widgets Core Gui OpenGL REQUIRED)
 # SET(QT_USE_QTOPENGL TRUE)
@@ -44,4 +41,8 @@ target_link_libraries(umve mve_dmrecon
                            Qt5::OpenGL
                            ${OPENGL_LIBRARY}
                            )
-                           
+
+#copy shaders to "bin" dir
+set(SHADER_DIR ${CMAKE_CURRENT_LIST_DIR}/shaders)
+message(STATUS "shader: ${SHADER_DIR}")
+install(DIRECTORY ${SHADER_DIR} DESTINATION ${EXECUTABLE_OUTPUT_PATH}/shaders/)
