@@ -15,7 +15,6 @@ endif()
 find_package(OpenGL REQUIRED)
 include_directories(${OpenGL_INCLUDE_DIR})
 
-
 find_package(Qt5 COMPONENTS Widgets Core Gui OpenGL REQUIRED)
 # SET(QT_USE_QTOPENGL TRUE)
 set(CMAKE_AUTORCC ON)
