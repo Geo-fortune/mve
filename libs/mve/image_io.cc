@@ -34,7 +34,7 @@
 
 #include "math/algo.h"
 #include "util/exception.h"
-#include "util/strings.h"
+#include "util/string_utils.h"
 #include "util/system.h"
 #include "mve/image_io.h"
 
@@ -631,7 +631,7 @@ void
 tiff_error_handler (char const* /*module*/, char const* fmt, va_list ap)
 {
     char msg[2048];
-    ::vsprintf(msg, fmt, ap);
+    ::vsnprintf(msg, sizeof(msg), fmt, ap);
     throw util::Exception(msg);
 }
 
@@ -648,8 +648,8 @@ load_tiff_file_headers (std::string const& filename)
 
     try
     {
-        uint32 width, height;
-        uint16 channels, bits, sampleFormat;
+        uint32_t width, height;
+        uint16_t channels, bits, sampleFormat;
         TIFFGetField(tif, TIFFTAG_IMAGEWIDTH, &width);
         TIFFGetField(tif, TIFFTAG_IMAGELENGTH, &height);
         TIFFGetField(tif, TIFFTAG_SAMPLESPERPIXEL, &channels);
@@ -746,8 +746,8 @@ load_tiff_file (std::string const& filename)
     try
     {
         /* Read width and height from TIFF and create MVE image. */
-        uint32 width, height;
-        uint16 channels, bits;
+        uint32_t width, height;
+        uint16_t channels, bits;
         TIFFGetField(tif, TIFFTAG_IMAGEWIDTH, &width);
         TIFFGetField(tif, TIFFTAG_IMAGELENGTH, &height);
         TIFFGetField(tif, TIFFTAG_SAMPLESPERPIXEL, &channels);
@@ -757,9 +757,9 @@ load_tiff_file (std::string const& filename)
         ByteImage::Ptr image = ByteImage::create(width, height, channels);
 
         /* Scanline based TIFF reading. */
-        uint32 rowstride = TIFFScanlineSize(tif);
+        uint32_t rowstride = TIFFScanlineSize(tif);
         ByteImage::ImageData& data = image->get_data();
-        for (uint32 row = 0; row < height; row++)
+        for (uint32_t row = 0; row < height; row++)
         {
             tdata_t row_pointer = &data[row * rowstride];
             TIFFReadScanline(tif, row_pointer, row);
@@ -822,8 +822,8 @@ load_tiff_16_file (std::string const& filename)
     try
     {
         /* Read width and height from TIFF and create MVE image. */
-        uint32 width, height;
-        uint16 channels, bits;
+        uint32_t width, height;
+        uint16_t channels, bits;
         TIFFGetField(tif, TIFFTAG_IMAGEWIDTH, &width);
         TIFFGetField(tif, TIFFTAG_IMAGELENGTH, &height);
         TIFFGetField(tif, TIFFTAG_SAMPLESPERPIXEL, &channels);
@@ -834,9 +834,9 @@ load_tiff_16_file (std::string const& filename)
         RawImage::Ptr image = Image<uint16_t>::create(width, height, channels);
 
         /* Scanline based TIFF reading. */
-        uint32 rowstride = TIFFScanlineSize(tif) / sizeof(uint16_t);
+        uint32_t rowstride = TIFFScanlineSize(tif) / sizeof(uint16_t);
         Image<uint16_t>::ImageData& data = image->get_data();
-        for (uint32 row = 0; row < height; row++)
+        for (uint32_t row = 0; row < height; row++)
         {
             tdata_t row_pointer = &data[row * rowstride];
             TIFFReadScanline(tif, row_pointer, row);
@@ -899,8 +899,8 @@ load_tiff_float_file (std::string const& filename)
     try
     {
         /* Read width and height from TIFF and create MVE image. */
-        uint32 width, height;
-        uint16 channels, bits;
+        uint32_t width, height;
+        uint16_t channels, bits;
         TIFFGetField(tif, TIFFTAG_IMAGEWIDTH, &width);
         TIFFGetField(tif, TIFFTAG_IMAGELENGTH, &height);
         TIFFGetField(tif, TIFFTAG_SAMPLESPERPIXEL, &channels);
@@ -911,9 +911,9 @@ load_tiff_float_file (std::string const& filename)
         FloatImage::Ptr image = Image<float>::create(width, height, channels);
 
         /* Scanline based TIFF reading. */
-        uint32 rowstride = TIFFScanlineSize(tif) / sizeof(float);
+        uint32_t rowstride = TIFFScanlineSize(tif) / sizeof(float);
         Image<float>::ImageData& data = image->get_data();
-        for (uint32 row = 0; row < height; row++)
+        for (uint32_t row = 0; row < height; row++)
         {
             tdata_t row_pointer = &data[row * rowstride];
             TIFFReadScanline(tif, row_pointer, row);
@@ -1297,9 +1297,10 @@ save_mvei_file (ImageBase::ConstPtr image, std::string const& filename)
     if (image == nullptr)
         throw std::invalid_argument("Null image given");
 
-    int32_t width = image->width();
-    int32_t height = image->height();
-    int32_t channels = image->channels();
+    // Note: This is a narrowing conversion.
+    int32_t width = static_cast<int32_t>(image->width());
+    int32_t height = static_cast<int32_t>(image->height());
+    int32_t channels = static_cast<int32_t>(image->channels());
     int32_t type = image->get_type();
     char const* data = image->get_byte_pointer();
     std::size_t size = image->get_byte_size();

@@ -7,8 +7,8 @@
  * of the BSD 3-Clause license. See the LICENSE.txt file for details.
  */
 
-#ifndef UTIL_STRING_HEADER
-#define UTIL_STRING_HEADER
+#ifndef UTIL_STRING_UTILS_HEADER
+#define UTIL_STRING_UTILS_HEADER
 
 #include <sstream>
 #include <string>
@@ -157,6 +157,26 @@ convert (std::string const& str, bool strict_conversion)
         throw std::invalid_argument("Invalid string conversion: " + str);
     return ret;
 }
+
+#if defined(_LIBCPP_VERSION)
+/* LLVM's libc++'s behavior when parsing a double from a stream is different
+ * than GCC's libstdc++, see the following issue:
+ *   https://www.github.com/llvm/llvm-project/issues/18156
+ *
+ * This is why the following workaround is needed when compiling against
+ * libc++.
+ */
+template <>
+inline double
+convert (std::string const& str, bool strict_conversion)
+{
+    std::size_t pos = 0;
+    double ret = std::stod(str, &pos);
+    if (strict_conversion && pos != str.length())
+        throw std::invalid_argument("Invalid string conversion: " + str);
+    return ret;
+}
+#endif
 
 template <typename T>
 inline char const*
@@ -511,4 +531,4 @@ get_size_string (std::size_t size)
 UTIL_STRING_NAMESPACE_END
 UTIL_NAMESPACE_END
 
-#endif /* UTIL_STRING_HEADER */
+#endif /* UTIL_STRING_UTILS_HEADER */
